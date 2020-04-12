@@ -1,3 +1,4 @@
+// import { sampleInnerHTML } from '../test/string';
 (function() {
     if (window.hasRun) {
         return;
@@ -15,9 +16,10 @@
             const wholeText = selection.anchorNode.parentElement.textContent;
             
             colorHighLighted(nameElementSelected);
+            const indexHighlightText = wholeText.indexOf(highlightText);
 
-            if (wholeText.indexOf(highlightText) > -1) {
-                replaceHighlightedParentElement(selection.focusNode.parentElement.innerHTML, highlightText, nameElementSelected, event.target)
+            if (indexHighlightText > -1) {
+                replaceHighlightedParentElement(selection.focusNode.parentElement.innerHTML, highlightText, indexHighlightText, nameElementSelected)
             }
         }
 
@@ -27,14 +29,57 @@
             });
         }
 
-        function replaceHighlightedParentElement(innerHTML, highlightText, nameElementSelected, target) {
+        function replaceHighlightedParentElement(innerHTML, highlightText, indexHighlightText, nameElementSelected) {
             const wholeText = innerHTML.repeat(1);
-            const newHighlightedText = `<span class="ht-highlighted">${highlightText}</span>`;
-            const newInnerHtml = wholeText.replace(highlightText, newHighlightedText);
+            const sliceHT = wholeText.slice(indexHighlightText);
+            const lastIndexHighlightText = wholeText.lastIndexOf(highlightText);
+
+            if(indexHighlightText == 0) {
+                replaceHTML(wholeText, wholeText, nameElementSelected);
+                return;
+            }
+            
+            const tags = findHTMLTags(wholeText);
+            
+            let currentHT = ""
+            if(tags && tags.length) {
+                //All the tricky shit to replace the content
+
+                let lengthBeforeTag = 0;
+                let textBeforeTag = "";
+
+                for (const tag of tags) {
+                    const indexTag = wholeText.indexOf(tag[0]);
+                    //Find firs tag
+                    const lastIndexTag = tag.index + tag[0].length;
+                    if(indexHighlightText < indexTag && lastIndexTag <= lastIndexHighlightText) {
+                        textBeforeTag = wholeText.slice(indexHighlightText, indexTag);
+                        currentHT = textBeforeTag + tag[0];
+                    }else if (lastIndexTag > lastIndexHighlightText) {
+                        
+                    }
+                }
+            }
+
+            const HTWithHTML = currentHT;
+
+            replaceHTML(wholeText, highlightText);
+        }
+
+        function replaceHTML(wholeText, text, nameElementSelected) {
+            const newHighlightedText = `<span class="ht-highlighted">${text}</span>`;
+            const newInnerHtml = wholeText.replace(text, newHighlightedText);
             const newElement = document.createElement(nameElementSelected);
 
             newElement.innerHTML = newInnerHtml;
-            target.replaceWith(newElement);
+            event.target.replaceWith(newElement);
+        }
+
+        function findHTMLTags(wholeText) {
+            const regexTags = /(<[^>]+>(.*?)<\/[a-z]>)/g;
+            let tags = [...wholeText.matchAll(regexTags)];
+
+            return tags;
         }
     };
 
