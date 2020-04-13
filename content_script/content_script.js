@@ -30,40 +30,42 @@
         }
 
         function replaceHighlightedParentElement(innerHTML, highlightText, indexHighlightText, nameElementSelected) {
-            const wholeText = innerHTML.repeat(1);
-            const sliceHT = wholeText.slice(indexHighlightText);
-            const lastIndexHighlightText = wholeText.lastIndexOf(highlightText);
-
-            if(indexHighlightText == 0) {
-                replaceHTML(wholeText, wholeText, nameElementSelected);
-                return;
-            }
-            
+            const wholeText = innerHTML.repeat(1);            
             const tags = findHTMLTags(wholeText);
             
-            let currentHT = ""
             if(tags && tags.length) {
-                //All the tricky shit to replace the content
-
-                let lengthBeforeTag = 0;
-                let textBeforeTag = "";
-
-                for (const tag of tags) {
-                    const indexTag = wholeText.indexOf(tag[0]);
-                    //Find firs tag
-                    const lastIndexTag = tag.index + tag[0].length;
-                    if(indexHighlightText < indexTag && lastIndexTag <= lastIndexHighlightText) {
-                        textBeforeTag = wholeText.slice(indexHighlightText, indexTag);
-                        currentHT = textBeforeTag + tag[0];
-                    }else if (lastIndexTag > lastIndexHighlightText) {
-                        
+                let txtToReplace = "";
+                let beforeWholeText = "";
+                let afterWholeText = "";
+                let beforeHT = "";
+                let afterHT = "";
+                for (tag of tags) {
+                    const TagComplete = tag[0];
+                    const tagContent = tag[2];
+                    const indexFoundInTag = highlightText.indexOf(tagContent);
+                    if (indexFoundInTag > - 1) {
+                        beforeHT = highlightText.slice(0, indexFoundInTag);
+                        afterHT = highlightText.slice(indexFoundInTag + tagContent.length);
+    
+                        const indexTag = wholeText.indexOf(TagComplete);
+                        beforeWholeText = wholeText.slice(0, indexTag);
+                        afterWholeText = wholeText.slice(indexTag + TagComplete.length);
+    
+                        txtToReplace = txtToReplace + beforeHT + TagComplete + afterHT;
+                        if (wholeText.indexOf(txtToReplace) > - 1)
+                            replaceHTML(wholeText, txtToReplace, nameElementSelected);
                     }
-                }
+                }                
             }
 
-            const HTWithHTML = currentHT;
+            replaceHTML(wholeText, highlightText, nameElementSelected);
+        }
 
-            replaceHTML(wholeText, highlightText);
+        function findHTMLTags(wholeText) {
+            const regexTags = /(<[^>]+>(.*?)<\/[a-z]>)/g;
+            let tags = [...wholeText.matchAll(regexTags)];
+
+            return tags;
         }
 
         function replaceHTML(wholeText, text, nameElementSelected) {
@@ -73,13 +75,7 @@
 
             newElement.innerHTML = newInnerHtml;
             event.target.replaceWith(newElement);
-        }
-
-        function findHTMLTags(wholeText) {
-            const regexTags = /(<[^>]+>(.*?)<\/[a-z]>)/g;
-            let tags = [...wholeText.matchAll(regexTags)];
-
-            return tags;
+            return;
         }
     };
 
