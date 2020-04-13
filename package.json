@@ -1,0 +1,37 @@
+{
+    "name": "highlighting_text",
+    "version": "0.1.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack-dev-server",
+        "build": "webpack",
+        "test": "jest"
+    },
+    "author": "@rasfuranku",
+    "license": "ISC",
+    "dependencies": {},
+    "devDependencies": {
+        "@babel/core": "^7.4.5",
+        "@babel/preset-env": "^7.4.5",
+        "@babel/preset-typescript": "^7.3.3",
+        "@babel/register": "^7.4.4",
+        "@types/jest": "^24.0.15",
+        "@typescript-eslint/eslint-plugin": "^2.27.0",
+        "@typescript-eslint/parser": "^2.27.0",
+        "babel-jest": "^24.8.0",
+        "babel-loader": "^8.0.6",
+        "cross-env": "^5.2.0",
+        "eslint": "^6.8.0",
+        "eslint-config-airbnb-base": "^14.1.0",
+        "eslint-plugin-import": "^2.20.2",
+        "jest": "^24.8.0",
+        "jsdom": "^15.1.1",
+        "ts-jest": "^24.0.2",
+        "ts-loader": "^6.0.4",
+        "typescript": "^3.5.2",
+        "webpack": "^4.34.0",
+        "webpack-cli": "^3.3.4",
+        "webpack-dev-server": "^3.7.2"
+    }
+}
