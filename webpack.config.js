@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/App.tsx',
+    entry: './src/browserAction.ts',
     devtool: 'inline-source-map',
     output: {
         filename: 'main.js',
@@ -16,11 +16,4 @@ module.exports = {
         extensions: [ '.tsx', '.ts', '.js' ]
       },
     mode: 'development',
-    devServer: {
-        contentBase: path.join(__dirname, 'dist'),
-        compress: false,
-        port: 9000,
-        liveReload: true,
-        open: true
-    }
 };

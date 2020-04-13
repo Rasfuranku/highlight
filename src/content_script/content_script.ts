@@ -1,37 +1,31 @@
-// import { sampleInnerHTML } from '../test/string';
 (function() {
-    if (window.hasRun) {
-        return;
-    }
-    window.hasRun = true;
-
-    function highlightText(event) {
+    function highlightText(event: any) {
         if (window.getSelection) {
-            const selection = window.getSelection();
-            const highlightText = selection.toString();
+            const selection: Selection = window.getSelection();
+            const highlightText: string = selection.toString();
 
-            if (selection.type !== "Range" && highlightText === "") return;
+        if (selection.type !== "Range" && highlightText === "") return;
 
             const nameElementSelected = selection.focusNode.parentElement.localName;
             const wholeText = selection.anchorNode.parentElement.textContent;
-            
+
             colorHighLighted(nameElementSelected);
             const indexHighlightText = wholeText.indexOf(highlightText);
 
             if (indexHighlightText > -1) {
-                replaceHighlightedParentElement(selection.focusNode.parentElement.innerHTML, highlightText, indexHighlightText, nameElementSelected)
+                replaceHighlightedParentElement(selection.focusNode.parentElement.innerHTML, highlightText, indexHighlightText, nameElementSelected);
             }
         }
 
-        function colorHighLighted(nameElementSelected) {
+        function colorHighLighted(nameElementSelected: string) {
             addRule(`${nameElementSelected}::selection`, {
                 background: "aqua",
             });
         }
 
-        function replaceHighlightedParentElement(innerHTML, highlightText, indexHighlightText, nameElementSelected) {
+        function replaceHighlightedParentElement(innerHTML: string, highlightText: string, indexHighlightText: number, nameElementSelected: string) {
             const wholeText = innerHTML.repeat(1);            
-            const tags = findHTMLTags(wholeText);
+            const tags: string[] = findHTMLTags(wholeText);
             
             if(tags && tags.length) {
                 let txtToReplace = "";
@@ -39,7 +33,7 @@
                 let afterWholeText = "";
                 let beforeHT = "";
                 let afterHT = "";
-                for (tag of tags) {
+                for (let tag of tags) {
                     const TagComplete = tag[0];
                     const tagContent = tag[2];
                     const indexFoundInTag = highlightText.indexOf(tagContent);
@@ -61,14 +55,14 @@
             replaceHTML(wholeText, highlightText, nameElementSelected);
         }
 
-        function findHTMLTags(wholeText) {
+        function findHTMLTags(wholeText: any) {
             const regexTags = /(<[^>]+>(.*?)<\/[a-z]>)/g;
             let tags = [...wholeText.matchAll(regexTags)];
 
             return tags;
         }
 
-        function replaceHTML(wholeText, text, nameElementSelected) {
+        function replaceHTML(wholeText:string, text: string, nameElementSelected: string) {
             const newHighlightedText = `<span class="ht-highlighted">${text}</span>`;
             const newInnerHtml = wholeText.replace(text, newHighlightedText);
             const newElement = document.createElement(nameElementSelected);
@@ -80,9 +74,9 @@
     };
 
     //Original source: https://stackoverflow.com/a/8051488/2151892
-    const addRule = (function (style) {
+    const addRule = (function (style: HTMLStyleElement) {
         var sheet = document.head.appendChild(style).sheet;
-        return function (selector, css) {
+        return function (selector: any, css: any) {
             var propText = typeof css === "string" ? css : Object.keys(css).map(function (p) {
                 return p + ":" + (p === "content" ? "'" + css[p] + "'" : css[p]);
             }).join(";");
