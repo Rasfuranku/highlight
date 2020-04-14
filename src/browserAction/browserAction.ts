@@ -1,17 +1,16 @@
 import { browser } from 'webextension-polyfill-ts';
 function start() {
-    function addCss() {
-        browser.tabs.insertCSS({"file": "../content_script/content_script.css"});
-    };
+	function addCss() {
+		browser.tabs.insertCSS({"file": "../src/contentScript/contentScript.css"});
+	}
 
-    function onError(error: any) {
-        console.log(error);
-    };
+	function onError(error: any) {
+		console.log(error);
+	}
 
-    browser.tabs.executeScript({file: "../content_script/content_script.js"})
-    .then(addCss)
-    .catch(onError);
-
+	browser.tabs.executeScript({"file": "./content.js"})
+	.then(addCss)
+	.catch(onError);
 }
 
 start();
