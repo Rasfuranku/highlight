@@ -1,16 +1,21 @@
 import { browser } from 'webextension-polyfill-ts';
-function start() {
-	function addCss() {
+import Highlight from '../contentScript/contentScript';
+
+export default class BrowserAction {
+	start() {
+		console.log("start");
+		const highlight = new Highlight();
+		highlight.start();
 		browser.tabs.insertCSS({"file": "../src/contentScript/contentScript.css"});
 	}
 
-	function onError(error: any) {
+	onError(error: any) {
 		console.log(error);
 	}
 
-	browser.tabs.executeScript({"file": "./content.js"})
-	.then(addCss)
-	.catch(onError);
+	executeScript () {
+		browser.tabs.executeScript({"file": "./content.js"})
+		.then(this.start)
+		.catch(this.onError);
+	}
 }
-
-start();

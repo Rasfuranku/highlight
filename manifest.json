@@ -9,6 +9,12 @@
 	"permissions": [
 		"activeTab"
 	],
+	"content_scripts": [
+		{
+		  "matches": ["*://*.mozilla.org/*"],
+		  "js": ["dist/content.js"]
+		}
+	],
 	"browser_action": {
 		"default_icon": {
 			"64": "icons/icon.png"

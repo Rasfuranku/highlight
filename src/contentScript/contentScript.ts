@@ -1,90 +1,99 @@
-(function() {
-	function highlightText(event: any) {
+export default class Highlight {
+	private selection: Selection | null = null;
+	private textHighlighted: string | null = null;
+	private event: any;
+
+	public start() {
+		document.addEventListener("click", (event) => this.highlightText(event));
+	}
+
+	private highlightText(event: any) {
 		if (window.getSelection) {
-			const selection: Selection | null = window.getSelection();
-			let highlightText: string | null;
-			if (selection) {
-				highlightText = selection.toString();
-				if (selection && selection.type !== "Range" && highlightText === "") return;
+			this.selection = window.getSelection();
+			this.event = event;
+			if (this.selection) {
+				this.textHighlighted = this.selection.toString();
+				if (this.selection && this.selection.type !== "Range" && this.textHighlighted === "") return;
 
-					const nameElementSelected = selection!.focusNode!.parentElement!.localName;
-					const wholeText = selection!.anchorNode!.parentElement!.textContent || "";
+				const nameElementSelected = this.selection!.focusNode!.parentElement!.localName;
+				const wholeText = this.selection!.anchorNode!.parentElement!.textContent || "";
 
-					colorHighLighted(nameElementSelected);
-					const indexHighlightText = wholeText.indexOf(highlightText);
+				this.addColorToHighLightedText(nameElementSelected);
+				const indexHighlightText = wholeText.indexOf(this.textHighlighted);
 
-					if (indexHighlightText > -1) {
-						replaceHighlightedParentElement(selection!.focusNode!.parentElement!.innerHTML,
-							highlightText,
-							indexHighlightText,
-							nameElementSelected,
-						);
-					}
+				if (indexHighlightText > -1) {
+					this.replaceHighlightedParentElement(this.selection!.focusNode!.parentElement!.innerHTML,
+						this.textHighlighted,
+						indexHighlightText,
+						nameElementSelected,
+					);
 				}
 			}
-
-		function colorHighLighted(nameElementSelected: string) {
-			addRule(`${nameElementSelected}::selection`, {
-				"background": "aqua",
-			});
 		}
+	}
 
-		function replaceHighlightedParentElement(innerHTML: string,
-			highlightText: string,
-			indexHighlightText: number,
-			nameElementSelected: string,
-		) {
-			const wholeText = innerHTML.repeat(1);
-			const tags: string[] = findHTMLTags(wholeText);
+	private addColorToHighLightedText(nameElementSelected: string) {
+		console.log(nameElementSelected);
+		this.addRule(`${nameElementSelected}::selection`, {
+			"background": "aqua",
+		});
+	}
 
-			if(tags && tags.length) {
-				let txtToReplace = "";
-				// let beforeWholeText = "";
-				// let afterWholeText = "";
-				let beforeHT = "";
-				let afterHT = "";
-				for (const tag of tags) {
-					const TagComplete = tag[0];
-					const tagContent = tag[2];
-					const indexFoundInTag = highlightText.indexOf(tagContent);
-					if (indexFoundInTag > - 1) {
-						beforeHT = highlightText.slice(0, indexFoundInTag);
-						afterHT = highlightText.slice(indexFoundInTag + tagContent.length);
+	private replaceHighlightedParentElement(innerHTML: string,
+		highlightText: string,
+		indexHighlightText: number,
+		nameElementSelected: string,
+	) {
+		const wholeText = innerHTML.repeat(1);
+		const tags: string[] = this.findHTMLTags(wholeText);
 
-						// const indexTag = wholeText.indexOf(TagComplete);
-						// beforeWholeText = wholeText.slice(0, indexTag);
-						// afterWholeText = wholeText.slice(indexTag + TagComplete.length);
+		if(tags && tags.length) {
+			let txtToReplace = "";
+			// let beforeWholeText = "";
+			// let afterWholeText = "";
+			let beforeHT = "";
+			let afterHT = "";
+			for (const tag of tags) {
+				const TagComplete = tag[0];
+				const tagContent = tag[2];
+				const indexFoundInTag = highlightText.indexOf(tagContent);
+				if (indexFoundInTag > - 1) {
+					beforeHT = highlightText.slice(0, indexFoundInTag);
+					afterHT = highlightText.slice(indexFoundInTag + tagContent.length);
 
-						txtToReplace = txtToReplace + beforeHT + TagComplete + afterHT;
-						if (wholeText.indexOf(txtToReplace) > - 1)
-							replaceHTML(wholeText, txtToReplace, nameElementSelected);
-					}
+					// const indexTag = wholeText.indexOf(TagComplete);
+					// beforeWholeText = wholeText.slice(0, indexTag);
+					// afterWholeText = wholeText.slice(indexTag + TagComplete.length);
+
+					txtToReplace = txtToReplace + beforeHT + TagComplete + afterHT;
+					if (wholeText.indexOf(txtToReplace) > - 1)
+						this.replaceHTML(wholeText, txtToReplace, nameElementSelected);
 				}
 			}
-
-			replaceHTML(wholeText, highlightText, nameElementSelected);
 		}
 
-		function findHTMLTags(wholeText: any) {
-			const regexTags = /(<[^>]+>(.*?)<\/[a-z]>)/g;
-			const tags = [...wholeText.matchAll(regexTags)];
+		this.replaceHTML(wholeText, highlightText, nameElementSelected);
+	}
 
-			return tags;
-		}
+	private findHTMLTags(wholeText: any) {
+		const regexTags = /(<[^>]+>(.*?)<\/[a-z]>)/g;
+		const tags = [...wholeText.matchAll(regexTags)];
 
-		function replaceHTML(wholeText:string, text: string, nameElementSelected: string) {
-			const newHighlightedText = `<span class="ht-highlighted">${text}</span>`;
-			const newInnerHtml = wholeText.replace(text, newHighlightedText);
-			const newElement = document.createElement(nameElementSelected);
+		return tags;
+	}
 
-			newElement.innerHTML = newInnerHtml;
-			event.target.replaceWith(newElement);
-			return;
-		}
-	};
+	private replaceHTML(wholeText:string, text: string, nameElementSelected: string) {
+		const newHighlightedText = `<span class="ht-highlighted">${text}</span>`;
+		const newInnerHtml = wholeText.replace(text, newHighlightedText);
+		const newElement = document.createElement(nameElementSelected);
+
+		newElement.innerHTML = newInnerHtml;
+		this.event.target.replaceWith(newElement);
+		return;
+	}
 
 	// Original source: https://stackoverflow.com/a/8051488/2151892
-	const addRule = (function (style: HTMLStyleElement) {
+	addRule = (function (style: HTMLStyleElement) {
 		const sheet = document.head.appendChild(style).sheet as CSSStyleSheet;
 		return function (selector: any, css: any) {
 			const propText = typeof css === "string" ? css : Object.keys(css).map(function (p) {
@@ -93,6 +102,7 @@
 			sheet!.insertRule(selector + "{" + propText + "}", sheet!.cssRules.length);
 		};
 	})(document.createElement("style"));
+}
 
-	document.addEventListener("click", highlightText);
-}());
+const highlight = new Highlight();
+highlight.start();

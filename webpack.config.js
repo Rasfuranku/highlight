@@ -2,6 +2,7 @@ const path = require("path");
 
 module.exports = {
     entry: {
+        start: "./src/start.ts",
         browser: "./src/browserAction/browserAction.ts",
         content: "./src/contentScript/contentScript.ts",
     },
