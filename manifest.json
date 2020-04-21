@@ -12,7 +12,8 @@
 	"content_scripts": [
 		{
 		  "matches": ["*://*.mozilla.org/*"],
-		  "js": ["dist/content.js"]
+		  "js": ["dist/content.js"],
+		  "css": ["src/contentScript/contentScript.css"]
 		}
 	],
 	"browser_action": {
