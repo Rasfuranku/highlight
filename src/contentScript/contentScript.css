@@ -1,6 +1,6 @@
 .ht-highlighted::selection {
     background-color: aqua;
 }
-.ht-highlighted {
+*::selection, .ht-highlighted {
     background-color: aqua;
 }
