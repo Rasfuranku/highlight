@@ -22,9 +22,9 @@ export default class Highlight {
 				const indexHighlightText = wholeText.indexOf(this.textHighlighted);
 
 				if (indexHighlightText > -1) {
-					this.replaceHighlightedParentElement(this.selection!.focusNode!.parentElement!.innerHTML,
+					this.replaceHighlightedParentElement(
+						this.selection!.focusNode!.parentElement!.innerHTML,
 						this.textHighlighted,
-						indexHighlightText,
 						nameElementSelected,
 					);
 				}
@@ -33,38 +33,24 @@ export default class Highlight {
 	}
 
 	private addColorToHighLightedText(nameElementSelected: string) {
-		console.log(nameElementSelected);
 		this.addRule(`${nameElementSelected}::selection`, {
 			"background": "aqua",
 		});
 	}
 
-	private replaceHighlightedParentElement(innerHTML: string,
-		highlightText: string,
-		indexHighlightText: number,
-		nameElementSelected: string,
-	) {
+	private replaceHighlightedParentElement(innerHTML: string, highlightText: string, nameElementSelected: string) {
 		const wholeText = innerHTML.repeat(1);
 		const tags: string[] = this.findHTMLTags(wholeText);
 
 		if(tags && tags.length) {
 			let txtToReplace = "";
-			// let beforeWholeText = "";
-			// let afterWholeText = "";
-			let beforeHT = "";
-			let afterHT = "";
 			for (const tag of tags) {
 				const TagComplete = tag[0];
 				const tagContent = tag[2];
 				const indexFoundInTag = highlightText.indexOf(tagContent);
 				if (indexFoundInTag > - 1) {
-					beforeHT = highlightText.slice(0, indexFoundInTag);
-					afterHT = highlightText.slice(indexFoundInTag + tagContent.length);
-
-					// const indexTag = wholeText.indexOf(TagComplete);
-					// beforeWholeText = wholeText.slice(0, indexTag);
-					// afterWholeText = wholeText.slice(indexTag + TagComplete.length);
-
+					const beforeHT = highlightText.slice(0, indexFoundInTag);
+					const afterHT = highlightText.slice(indexFoundInTag + tagContent.length);
 					txtToReplace = txtToReplace + beforeHT + TagComplete + afterHT;
 					if (wholeText.indexOf(txtToReplace) > - 1)
 						this.replaceHTML(wholeText, txtToReplace, nameElementSelected);

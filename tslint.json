@@ -17,7 +17,7 @@
         "no-consecutive-blank-lines": false,
         "no-console": {
             "severity": "warning",
-            "options": ["debug", "info", "log", "time", "timeEnd", "trace"]
+            "options": ["debug", "log", "time", "timeEnd", "trace"]
         },
         "no-duplicate-variable": true,
         "no-irregular-whitespace": true,

@@ -3,14 +3,14 @@ import Highlight from '../contentScript/contentScript';
 
 export default class BrowserAction {
 	start() {
-		console.log("start");
 		const highlight = new Highlight();
 		highlight.start();
 		browser.tabs.insertCSS({"file": "../src/contentScript/contentScript.css"});
+		console.info("Application started");
 	}
 
 	onError(error: any) {
-		console.log(error);
+		console.error(error);
 	}
 
 	executeScript () {
