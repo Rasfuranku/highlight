@@ -12,18 +12,19 @@ export default class Highlight {
 			this.selection = window.getSelection();
 			this.event = event;
 			if (this.selection) {
+				const parentElement = this.selection!.focusNode!.parentElement;
 				this.textHighlighted = this.selection.toString();
 				if (this.selection && this.selection.type !== "Range" && this.textHighlighted === "") return;
 
-				const nameElementSelected = this.selection!.focusNode!.parentElement!.localName;
-				const wholeText = this.selection!.anchorNode!.parentElement!.textContent || "";
+				const nameElementSelected = parentElement!.localName;
+				const wholeText = parentElement!.textContent || "";
 
 				this.addColorToHighLightedText(nameElementSelected);
 				const indexHighlightText = wholeText.indexOf(this.textHighlighted);
 
 				if (indexHighlightText > -1) {
 					this.replaceHighlightedParentElement(
-						this.selection!.focusNode!.parentElement!.innerHTML,
+						parentElement!.innerHTML,
 						this.textHighlighted,
 						nameElementSelected,
 					);
