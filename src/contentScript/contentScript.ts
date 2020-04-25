@@ -39,27 +39,30 @@ export default class Highlight {
 		});
 	}
 
-	private replaceHighlightedParentElement(innerHTML: string, highlightText: string, nameElementSelected: string) {
+	private replaceHighlightedParentElement(innerHTML: string, highlightedText: string, nameElementSelected: string) {
 		const wholeText = innerHTML.repeat(1);
 		const tags: string[] = this.findHTMLTags(wholeText);
+		let highlightedTextCopy = highlightedText.slice(0);
 
 		if(tags && tags.length) {
 			let txtToReplace = "";
 			for (const tag of tags) {
 				const TagComplete = tag[0];
 				const tagContent = tag[2];
-				const indexFoundInTag = highlightText.indexOf(tagContent);
+				const indexFoundInTag = highlightedTextCopy.indexOf(tagContent);
 				if (indexFoundInTag > - 1) {
-					const beforeHT = highlightText.slice(0, indexFoundInTag);
-					const afterHT = highlightText.slice(indexFoundInTag + tagContent.length);
-					txtToReplace = txtToReplace + beforeHT + TagComplete + afterHT;
-					if (wholeText.indexOf(txtToReplace) > - 1)
-						this.replaceHTML(wholeText, txtToReplace, nameElementSelected);
+					const beforeHT = highlightedTextCopy.slice(0, indexFoundInTag);
+					const afterHT = highlightedTextCopy.slice(indexFoundInTag + tagContent.length);
+					txtToReplace = txtToReplace + beforeHT + TagComplete;
+					highlightedTextCopy = afterHT;
 				}
 			}
+			txtToReplace = txtToReplace + highlightedTextCopy;
+			if (wholeText.indexOf(txtToReplace) > - 1)
+				this.replaceHTML(wholeText, txtToReplace, nameElementSelected);
 		}
 
-		this.replaceHTML(wholeText, highlightText, nameElementSelected);
+		this.replaceHTML(wholeText, highlightedText, nameElementSelected);
 	}
 
 	private findHTMLTags(wholeText: any) {
