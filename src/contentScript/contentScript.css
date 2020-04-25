@@ -4,3 +4,6 @@
 *::selection, .ht-highlighted {
     background-color: aqua;
 }
+.ht-highlighted a {
+    text-decoration: underline;
+}

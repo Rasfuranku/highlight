@@ -1,6 +1,6 @@
 export default class Highlight {
 	private selection: Selection | null = null;
-	private textHighlighted: string | null = null;
+	private highlightedText: string | null = null;
 	private parentElement: HTMLElement | null | undefined;
 	private event: any;
 
@@ -14,16 +14,16 @@ export default class Highlight {
 			this.event = event;
 			if (this.selection) {
 				this.parentElement = this.selection!.focusNode!.parentElement;
-				this.textHighlighted = this.selection.toString();
-				if (this.selection && this.selection.type !== "Range" && this.textHighlighted === "") return;
+				this.highlightedText = this.selection.toString();
+				if (this.selection && this.selection.type !== "Range" && this.highlightedText === "") return;
 
 				const wholeText = this.event.originalTarget.textContent || "";
 
 				this.addColorToHighLightedText(this.parentElement!.localName);
-				const indexHighlightText = wholeText.indexOf(this.textHighlighted);
+				const indexHighlightText = wholeText.indexOf(this.highlightedText);
 
 				if (indexHighlightText > -1) {
-					this.replaceHighlightedParentElement(this.textHighlighted);
+					this.replaceHighlightedParentElement();
 				}
 			}
 		}
@@ -35,27 +35,30 @@ export default class Highlight {
 		});
 	}
 
-	private replaceHighlightedParentElement(highlightText: string) {
+	private replaceHighlightedParentElement() {
 		const wholeText = this.parentElement!.innerHTML.repeat(1);
 		const tags: string[] = this.findHTMLTags(wholeText);
+		let highlightedTextCopy = this.highlightedText!.slice(0);
 
 		if(tags && tags.length) {
 			let txtToReplace = "";
 			for (const tag of tags) {
 				const TagComplete = tag[0];
 				const tagContent = tag[2];
-				const indexFoundInTag = highlightText.indexOf(tagContent);
+				const indexFoundInTag = highlightedTextCopy.indexOf(tagContent);
 				if (indexFoundInTag > - 1) {
-					const beforeHT = highlightText.slice(0, indexFoundInTag);
-					const afterHT = highlightText.slice(indexFoundInTag + tagContent.length);
-					txtToReplace = txtToReplace + beforeHT + TagComplete + afterHT;
-					if (wholeText.indexOf(txtToReplace) > - 1)
-						this.replaceHTML(wholeText, txtToReplace);
+					const beforeHT = highlightedTextCopy.slice(0, indexFoundInTag);
+					const afterHT = highlightedTextCopy.slice(indexFoundInTag + tagContent.length);
+					txtToReplace = txtToReplace + beforeHT + TagComplete;
+					highlightedTextCopy = afterHT;
 				}
 			}
+			txtToReplace = txtToReplace + highlightedTextCopy;
+			if (wholeText.indexOf(txtToReplace) > - 1)
+				this.replaceHTML(wholeText, txtToReplace);
 		}
 
-		this.replaceHTML(wholeText, highlightText);
+		this.replaceHTML(wholeText, highlightedTextCopy);
 	}
 
 	private findHTMLTags(wholeText: any) {
