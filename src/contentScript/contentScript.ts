@@ -62,7 +62,7 @@ export default class Highlight {
 	}
 
 	private findHTMLTags(wholeText: any) {
-		const regexTags = /(<[^>]+>(.*?)<\/[a-z]>)/g;
+		const regexTags = /(<[^>]+>(.*?)<\/[^]+>)/g;
 		const tags = [...wholeText.matchAll(regexTags)];
 
 		return tags;
