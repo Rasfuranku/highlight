@@ -1,6 +1,7 @@
 export default class Highlight {
 	private selection: Selection | null = null;
-	private textHighlighted: string | null = null;
+	private highlightedText: string | null = null;
+	private parentElement: HTMLElement | null | undefined;
 	private event: any;
 
 	public start() {
@@ -12,22 +13,17 @@ export default class Highlight {
 			this.selection = window.getSelection();
 			this.event = event;
 			if (this.selection) {
-				const parentElement = this.selection!.focusNode!.parentElement;
-				this.textHighlighted = this.selection.toString();
-				if (this.selection && this.selection.type !== "Range" && this.textHighlighted === "") return;
+				this.parentElement = this.selection!.focusNode!.parentElement;
+				this.highlightedText = this.selection.toString();
+				if (this.selection && this.selection.type !== "Range" && this.highlightedText === "") return;
 
-				const nameElementSelected = parentElement!.localName;
-				const wholeText = parentElement!.textContent || "";
+				const wholeText = this.event.originalTarget.textContent || "";
 
-				this.addColorToHighLightedText(nameElementSelected);
-				const indexHighlightText = wholeText.indexOf(this.textHighlighted);
+				this.addColorToHighLightedText(this.parentElement!.localName);
+				const indexHighlightText = wholeText.indexOf(this.highlightedText);
 
 				if (indexHighlightText > -1) {
-					this.replaceHighlightedParentElement(
-						parentElement!.innerHTML,
-						this.textHighlighted,
-						nameElementSelected,
-					);
+					this.replaceHighlightedParentElement();
 				}
 			}
 		}
@@ -39,10 +35,10 @@ export default class Highlight {
 		});
 	}
 
-	private replaceHighlightedParentElement(innerHTML: string, highlightedText: string, nameElementSelected: string) {
-		const wholeText = innerHTML.repeat(1);
+	private replaceHighlightedParentElement() {
+		const wholeText = this.parentElement!.innerHTML.repeat(1);
 		const tags: string[] = this.findHTMLTags(wholeText);
-		let highlightedTextCopy = highlightedText.slice(0);
+		let highlightedTextCopy = this.highlightedText!.slice(0);
 
 		if(tags && tags.length) {
 			let txtToReplace = "";
@@ -59,10 +55,10 @@ export default class Highlight {
 			}
 			txtToReplace = txtToReplace + highlightedTextCopy;
 			if (wholeText.indexOf(txtToReplace) > - 1)
-				this.replaceHTML(wholeText, txtToReplace, nameElementSelected);
+				this.replaceHTML(wholeText, txtToReplace);
 		}
 
-		this.replaceHTML(wholeText, highlightedText, nameElementSelected);
+		this.replaceHTML(wholeText, highlightedTextCopy);
 	}
 
 	private findHTMLTags(wholeText: any) {
@@ -72,13 +68,17 @@ export default class Highlight {
 		return tags;
 	}
 
-	private replaceHTML(wholeText:string, text: string, nameElementSelected: string) {
+	private replaceHTML(wholeText:string, text: string) {
 		const newHighlightedText = `<span class="ht-highlighted">${text}</span>`;
 		const newInnerHtml = wholeText.replace(text, newHighlightedText);
-		const newElement = document.createElement(nameElementSelected);
+		const newParentNode = document.createElement(this.event.originalTarget.localName);
+		const newParentElement = document.createElement(this.parentElement!.localName);
 
-		newElement.innerHTML = newInnerHtml;
-		this.event.target.replaceWith(newElement);
+		newParentElement.innerHTML = newInnerHtml;
+		newParentElement.className = this.parentElement!.className;
+		newParentNode.append(newParentElement);
+
+		this.event.target.replaceWith(newParentNode);
 		return;
 	}
 
