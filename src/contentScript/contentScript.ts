@@ -6,10 +6,11 @@ export default class Highlight {
 
 	public start() {
 		document.addEventListener("click", (event) => this.highlightText(event));
-		document.addEventListener("dblclick", (event) => this.highlightText(event));
+		document.addEventListener("click", (event) => this.highlightText(event));
 	}
 
 	private highlightText(event: any) {
+		event.preventDefault();
 		if (window.getSelection) {
 			this.selection = window.getSelection();
 			this.event = event;
