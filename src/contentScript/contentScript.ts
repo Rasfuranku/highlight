@@ -6,13 +6,16 @@ export default class Highlight {
 
 	public start() {
 		document.addEventListener("click", (event) => this.highlightText(event));
+		document.addEventListener("click", (event) => this.highlightText(event));
 	}
 
 	private highlightText(event: any) {
+		event.preventDefault();
 		if (window.getSelection) {
 			this.selection = window.getSelection();
 			this.event = event;
-			if (this.selection) {
+			if (this.selection && this.selection !== null
+				&& this.selection.toString() !== "" && this.selection.toString().length > 1) {
 				this.parentElement = this.selection!.focusNode!.parentElement;
 				this.highlightedText = this.selection.toString();
 				if (this.selection && this.selection.type !== "Range" && this.highlightedText === "") return;
@@ -57,8 +60,7 @@ export default class Highlight {
 			if (wholeText.indexOf(txtToReplace) > - 1)
 				this.replaceHTML(wholeText, txtToReplace);
 		}
-
-		this.replaceHTML(wholeText, highlightedTextCopy);
+		if (this.highlightedText) this.replaceHTML(wholeText, this.highlightedText);
 	}
 
 	private findHTMLTags(wholeText: any) {
@@ -68,7 +70,7 @@ export default class Highlight {
 		return tags;
 	}
 
-	private replaceHTML(wholeText:string, text: string) {
+	private replaceHTML(wholeText:string, text: string) {		
 		const newHighlightedText = `<span class="ht-highlighted">${text}</span>`;
 		const newInnerHtml = wholeText.replace(text, newHighlightedText);
 		const newParentNode = document.createElement(this.event.originalTarget.localName);
